@@ -14,18 +14,14 @@
 
 #include "FileManager.h"
 
-#define KB (1024)
-#define MB (1024*KB)
-#define GB (1024*MB)
-
 #define PATH_MAX 256
 
-int list_dir_add_file(cJSON *dirjson, struct dirent *entry){
+int list_dir_add_file(cJSON *dirjson, struct stat *stat_entry, struct dirent *dir_entry){
   cJSON *file = cJSON_CreateObject();
   cJSON_AddItemToArray(dirjson, file);
-  cJSON_AddItemToObject(file, "filename", cJSON_CreateString(entry->d_name));
-  cJSON_AddItemToObject(file, "size", cJSON_CreateNumber(4));
-  cJSON_AddItemToObject(file, "dir", cJSON_CreateBool((entry->d_type & DT_DIR) ? true : false));
+  cJSON_AddItemToObject(file, "filename", cJSON_CreateString(dir_entry->d_name));
+  cJSON_AddItemToObject(file, "size", cJSON_CreateNumber(stat_entry->st_size));
+  cJSON_AddItemToObject(file, "dir", cJSON_CreateBool((dir_entry->d_type & DT_DIR) ? true : false));
   
   
 //  const char *x = b64_encode(filename, strlen(filename));
@@ -42,28 +38,60 @@ int list_dir_add_file(cJSON *dirjson, struct dirent *entry){
 //  return 0;
 //}
 
-int list_dir(const char* path){
-    if(path == NULL){
-      path = strdup(app_data_path);
+unsigned int add_slash_if_needed(char* path, int len){
+  if(path[len-1] == '/'){
+    return len;
+  }
+  path[len] = '/';
+  path[++len] = 0;
+  return len;
+}
+
+int list_dir(const char* dir_path, cJSON **out_json){
+    if(dir_path == NULL){
+      dir_path = strdup(app_data_path);
     }
     cJSON *dirjson = cJSON_CreateArray();
-    DIR *dp = opendir(path);
+    DIR *dp = opendir(dir_path);
     if (dp == NULL){
         perror("opendir");
         return -1;
     }
     struct dirent *entry;
+    struct stat file_stats;
+    char file_path[FILENAME_MAX];
+    strcpy(file_path, dir_path);
+    unsigned long dir_path_len = strlen(dir_path);
+  
+    // Add slash
+    dir_path_len = add_slash_if_needed(file_path, dir_path_len);
+    
     while((entry = readdir(dp))) {
-      list_dir_add_file(dirjson, entry);
+      // Exclude . and .. files
+      if(entry->d_name[0] == '.' ||
+         (entry->d_name[0] == '.' && entry->d_name[1] == '.')){
+        continue;
+      }
+      
+      // Check if the filame isn't too long
+      if(strlen(entry->d_name) + dir_path_len > FILENAME_MAX-1){
+        continue;
+      }
+      
+      // Prepare the whole filepath
+      strcpy(file_path+dir_path_len, entry->d_name);
+      if (stat(file_path, &file_stats)){
+        continue;
+      }
+      list_dir_add_file(dirjson, &file_stats, entry);
     }
 
     cJSON *message_json = cJSON_CreateObject();
     cJSON_AddItemToObject(message_json, "payload", dirjson);
     cJSON_AddItemToObject(message_json, "type", cJSON_CreateString("forward"));
     cJSON_AddItemToObject(message_json, "command", cJSON_CreateString("list-files"));
-    send_json_to_server(message_json);
-    cJSON_Delete(message_json);
     closedir(dp);
+    *out_json = message_json;
     return 0;
 }
 
@@ -71,20 +99,14 @@ int list_dir_locally(const char* path, char **out){
     if(path == NULL){
       path = strdup(app_data_path);
     }
-    cJSON *dirjson = cJSON_CreateArray();
-    DIR *dp = opendir(path);
-    if (dp == NULL){
-        perror("opendir");
-        return -1;
-    }
-    struct dirent *entry;
-    while((entry = readdir(dp))) {
-      list_dir_add_file(dirjson, entry);
-    }
-    char *strjson = cJSON_Print(dirjson);
+    cJSON *json = NULL;
+    list_dir(path, &json);
+  
+    cJSON *json_files_array = cJSON_GetObjectItem(json, "payload");
+  
+    char *strjson = cJSON_Print(json_files_array);
     *out = strjson;
-//    cJSON_Delete(message_json);
-    closedir(dp);
+    cJSON_free(json);
     return (int)strlen(strjson);
 }
 

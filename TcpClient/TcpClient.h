@@ -25,6 +25,10 @@ typedef struct {
   uint32_t passcode_token;
 } TcpClient;
 
+#define KB (1024)
+#define MB (1024*KB)
+#define GB (1024*MB)
+
 #include <TcpParser.h>
 
 typedef void (*didDownloadFileFunPtrDef)(const char*);

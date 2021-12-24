@@ -13,7 +13,7 @@
 #include "base64/b64.h"
 #include "TcpClient/TcpClient.h"
 
-int list_dir(const char* path);
+int list_dir(const char* path, cJSON **out_json);
 int send_file(const char* path);
 int save_file_from_json(cJSON *message_json);
 int list_dir_locally(const char* path, char **out);

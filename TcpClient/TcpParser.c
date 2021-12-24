@@ -10,12 +10,14 @@
 
 int parseListDir(cJSON *message_json){
   cJSON *path = cJSON_GetObjectItemCaseSensitive(message_json, "path");
-  if (!(cJSON_IsString(path))){
-    list_dir(NULL);
+  const char *filepath = NULL;
+  cJSON *out_json = NULL;
+  if (cJSON_IsString(path)){
+    filepath = path->valuestring;
   }
-  else{
-    list_dir(path->valuestring);
-  }
+  list_dir(filepath, &out_json);
+  send_json_to_server(out_json);
+  cJSON_Delete(out_json);
   return 0;
 }
 
