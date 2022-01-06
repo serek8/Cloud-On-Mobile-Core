@@ -97,6 +97,32 @@ int list_dir(const char* dir_path, cJSON **out_json){
     return 0;
 }
 
+int remove_file(const char* path, cJSON **out_json){
+    char file_path[FILENAME_MAX];
+    strcpy(file_path, app_data_path);
+    unsigned long path_len = strlen(file_path);
+  
+    // Add slash
+    path_len = add_slash_if_needed(file_path, (int)path_len);
+    strcpy(file_path+path_len, path);
+    
+    int result = 0;
+    if(remove(file_path) != 0){
+      result = -1;
+    }
+
+    cJSON *message_json = cJSON_CreateObject();
+    cJSON_AddItemToObject(message_json, "type", cJSON_CreateString("forward"));
+    cJSON_AddItemToObject(message_json, "command", cJSON_CreateString("remove"));
+    cJSON_AddItemToObject(message_json, "result", cJSON_CreateNumber(result));
+    if(result != 0){
+      cJSON_AddItemToObject(message_json, "error_message", cJSON_CreateString("Can't remove file"));
+    }
+    *out_json = message_json;
+    return 0;
+}
+
+
 int list_dir_locally(const char* path, char **out){
     if(path == NULL){
       path = strdup(app_data_path);

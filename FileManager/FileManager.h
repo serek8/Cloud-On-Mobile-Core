@@ -17,4 +17,5 @@ int list_dir(const char* path, cJSON **out_json);
 int send_file(const char* path);
 int save_file_from_json(cJSON *message_json);
 int list_dir_locally(const char* path, char **out);
+int remove_file(const char* path, cJSON **out_json);
 #endif /* FileManager_h */

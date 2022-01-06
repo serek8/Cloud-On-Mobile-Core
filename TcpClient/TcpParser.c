@@ -55,6 +55,19 @@ int parseUploadToDevice(cJSON *message_json){
   return 0;
 }
 
+int parseRemoveFileFromDevice(cJSON *message_json){
+  cJSON *path = cJSON_GetObjectItemCaseSensitive(message_json, "path");
+  const char *filepath = NULL;
+  cJSON *out_json = NULL;
+  if (cJSON_IsString(path)){
+    filepath = path->valuestring;
+  }
+  remove_file(filepath, &out_json);
+  send_json_to_server(out_json);
+  cJSON_Delete(out_json);
+  return 0;
+}
+
 int parseConnectReply(cJSON *message_json, TcpClient *tcp_client){
   tcp_client->passcode = cJSON_GetNumberValue(cJSON_GetObjectItem(message_json, "code"));
   tcp_client->passcode_token = cJSON_GetNumberValue(cJSON_GetObjectItem(message_json, "code_token"));
@@ -111,6 +124,9 @@ int parseTcpMessage(const char * const message, TcpClient *tcp_client){
   }
   else if(!strcmp(command->valuestring, "connect")){
     retval=parseConnectReply(message_json, tcp_client);
+  }
+  else if(!strcmp(command->valuestring, "remove")){
+    retval=parseRemoveFileFromDevice(message_json);
   }
 //  else if(!strcmp(command->valuestring, "reconnect")){
 //    retval=parseReonnectReply(message_json, tcp_client);
