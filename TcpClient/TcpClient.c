@@ -67,7 +67,11 @@ int32_t connect_to_server(const char *ip, int port, uint32_t *code){
   
 //    struct sockaddr_in their_addr; /* connector's address information */
     struct hostent *he = gethostbyname(ip);
-
+  
+    // DNS error
+    if(he == NULL){
+      return -1;
+    }
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("socket");
         exit(1);
