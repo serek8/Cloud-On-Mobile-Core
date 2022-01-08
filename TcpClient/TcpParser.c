@@ -48,7 +48,7 @@ int parseUploadToDevice(cJSON *message_json){
   
   cJSON *ack_json = cJSON_CreateObject();
   cJSON_AddItemToObject(ack_json, "filepath", cJSON_CreateString(filename));
-  cJSON_AddItemToObject(ack_json, "command", cJSON_CreateString("list-files"));
+  cJSON_AddItemToObject(ack_json, "command", cJSON_CreateString("upload"));
   cJSON_AddItemToObject(ack_json, "result", cJSON_CreateNumber(0));
   send_json_to_server(ack_json);
   cJSON_Delete(ack_json);
