@@ -212,6 +212,9 @@ int32_t receive_string_from_server(char** buffer){
     }
     bytes_to_read = msg_len;
     char *new_buffer = malloc(msg_len);
+    if(new_buffer == NULL){
+      return -1;
+    }
     *buffer = new_buffer;
     
     while (bytes_to_read > 0) {
