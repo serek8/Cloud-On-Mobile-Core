@@ -92,11 +92,11 @@ int tlsHanshake(int fd){
   printf("certname=%s, issuer=%s", buf_subject, buf_issuer);
   
 
-  long ssl_pinning_res = SSL_get_verify_result(ssl);
-  if( ssl_pinning_res != X509_V_OK){
-      printf("SSL Pinner: Bad OK");
-      return -1;
-  }
+//  long ssl_pinning_res = SSL_get_verify_result(ssl);
+//  if( ssl_pinning_res != X509_V_OK){
+//      printf("SSL Pinner: Bad OK");
+//      return -1;
+//  }
   printf("SSL Pinner: Cert OK");
   return 0;
 }

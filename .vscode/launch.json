@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+    
+        {
+            "name": "Launch (lldb)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/Client",
+            "internalConsoleOptions": "openOnSessionStart",
+            "logging": {
+                "moduleLoad": false,
+                "programOutput": true,
+                "trace": false
+            },
+            "showDisplayString": false,
+            "args": [],
+            "stopAtEntry": false,
+            "externalConsole": true, 
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            // "MIMode": "lldb",
+            "preLaunchTask": "buduj",
+            // "miDebuggerPath": "/Users/jan/.vscode/extensions/ms-vscode.cpptools-1.8.0-insiders2/debugAdapters/lldb-mi/bin/lldb-mi",
+        }
+    ]
+}
