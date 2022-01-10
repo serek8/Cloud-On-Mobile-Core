@@ -6,7 +6,7 @@
             "name": "Launch (lldb)",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/Client",
+            "program": "${workspaceFolder}/build/CloudOnMobileCoreClient",
             "internalConsoleOptions": "openOnSessionStart",
             "logging": {
                 "moduleLoad": false,
@@ -14,14 +14,12 @@
                 "trace": false
             },
             "showDisplayString": false,
-            "args": [],
-            "stopAtEntry": false,
+            "args": ["cloudon.cc", "9293"],
+            "stopAtEntry": true,
             "externalConsole": true, 
             "cwd": "${workspaceFolder}",
             "environment": [],
-            // "MIMode": "lldb",
-            "preLaunchTask": "buduj",
-            // "miDebuggerPath": "/Users/jan/.vscode/extensions/ms-vscode.cpptools-1.8.0-insiders2/debugAdapters/lldb-mi/bin/lldb-mi",
+            // "preLaunchTask": "buduj",
         }
     ]
 }

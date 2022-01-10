@@ -16,13 +16,20 @@
 
 #define PATH_MAX 256
 
+#ifdef __APPLE__
+#ifndef st_mtim
+#define st_mtim st_mtimespec
+#endif
+#endif
+
 int list_dir_add_file(cJSON *dirjson, struct stat *stat_entry, struct dirent *dir_entry){
   cJSON *file = cJSON_CreateObject();
   cJSON_AddItemToArray(dirjson, file);
   cJSON_AddItemToObject(file, "name", cJSON_CreateString(dir_entry->d_name));
   cJSON_AddItemToObject(file, "filename", cJSON_CreateString(dir_entry->d_name)); // todo: remove
   cJSON_AddItemToObject(file, "size", cJSON_CreateNumber(stat_entry->st_size));
-  cJSON_AddItemToObject(file, "date_epoch", cJSON_CreateNumber(stat_entry->st_mtimespec.tv_sec));
+  // cJSON_AddItemToObject(file, "date_epoch", cJSON_CreateNumber(stat_entry->st_mtimespec.tv_sec));
+  cJSON_AddItemToObject(file, "date_epoch", cJSON_CreateNumber(stat_entry->st_mtim.tv_sec));
   cJSON_AddItemToObject(file, "dir", cJSON_CreateBool((dir_entry->d_type & DT_DIR) ? true : false));
   
   

@@ -44,7 +44,9 @@ int parseUploadToDevice(cJSON *message_json){
   
   save_file_from_json(message_json);
   
-  callback_did_download_file_funptr(filename);
+  if(callback_did_download_file_funptr != NULL){
+      callback_did_download_file_funptr(filename);
+  }
   
   cJSON *ack_json = cJSON_CreateObject();
   cJSON_AddItemToObject(ack_json, "filepath", cJSON_CreateString(filename));

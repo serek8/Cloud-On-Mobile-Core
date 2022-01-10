@@ -4,11 +4,19 @@ cmake_minimum_required(VERSION 3.10)
 project(CloudOnMobileCoreClient)
 
 include_directories(CloudOnMobileCoreClient 
+    base64
+    FileManager,
     TcpClient,
     "include"
     ".")
 
+add_compile_options(-g)
+
 set(SOURCE_FILES
+    base64/buffer.c
+    base64/encode.c
+    base64/decode.c
+    FileManager/FileManager.c
     TcpClient/TcpParser.c
     TcpClient/TcpClient.c
     TcpClient/TlsClient.c
@@ -20,4 +28,7 @@ set(SOURCE_FILES
 add_executable(CloudOnMobileCoreClient ${SOURCE_FILES})
 
 target_link_libraries(CloudOnMobileCoreClient
-    ../boringssl/build/ssl/libssl.a)
+    pthread
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libs/linux/ssl/libssl.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libs/linux/crypto/libcrypto.a
+    )

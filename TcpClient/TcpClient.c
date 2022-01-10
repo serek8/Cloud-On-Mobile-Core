@@ -258,8 +258,9 @@ int runEndlessServer(void){
   char * message = NULL;
   while (1) {
     int ret = receive_string_from_server(&message);
-    if(ret < 0) break;
+    if(ret <= 0) break;
     parseTcpMessage(message, &tcp_client);
+    if(ret <= 0) break;
   }
   return -1;
 }
