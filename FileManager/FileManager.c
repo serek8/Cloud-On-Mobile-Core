@@ -14,7 +14,9 @@
 
 #include "FileManager.h"
 
+#ifndef PATH_MAX
 #define PATH_MAX 256
+#endif
 
 #ifdef __APPLE__
 #ifndef st_mtim

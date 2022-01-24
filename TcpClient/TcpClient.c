@@ -5,6 +5,7 @@
 //  Created by Cloud On Mobile Team on 18/12/2020.
 //
 
+#include <strings.h>
 #include "TcpClient.h"
 #include "TlsClient.h"
 
@@ -74,6 +75,8 @@ int32_t connect_to_server(const char *ip, int port, uint32_t *code){
     }
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("socket");
+        char buff[255];
+        sprintf(buff, "errno=%d = %s\n", strerror(errno));
         exit(1);
     }
 
